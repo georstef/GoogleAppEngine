@@ -70,3 +70,11 @@ class User(Base, modelx.UserX):
       'username',
       'permissions',
     })
+
+
+class Contact(Base):
+    user_key = ndb.KeyProperty(kind=User, required=True)
+    name = ndb.StringProperty(required=True)
+    email = ndb.StringProperty(default='')
+    phone = ndb.StringProperty(default='')
+    address = ndb.StringProperty(default='')
