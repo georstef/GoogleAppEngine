@@ -20,10 +20,12 @@ from main import config
 ###############################################################################
 # paths for computers with multiple python versions
 ###############################################################################
+root = os.path.dirname(os.path.realpath(__file__))
+
 PATH_TO_PYTHON27 = 'c:/python27'
 PATH_TO_PYTHON27_SCRIPTS = 'c:/python27/scripts'
 PATH_TO_GOOGLE_APPENGINE = 'c:/Progra~1/Google/google_appengine'
-PATH_TO_INSTALL_REQUIREMENTS = 'd:/Programming/Git/GoogleAppEngine/03_phonebook/main/lib'
+PATH_TO_INSTALL_REQUIREMENTS = os.path.join(root, 'main', 'lib')
 
 ###############################################################################
 # Options
