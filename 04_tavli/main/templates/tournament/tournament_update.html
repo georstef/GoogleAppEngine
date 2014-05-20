@@ -1,0 +1,38 @@
+# extends 'base.html'
+# import 'macro/forms.html' as forms
+
+# block content
+  <div class="page-header">
+    <h1>
+      <small>
+        <a href="{{url_for('tournament_list', order='-modified')}}" class="text-muted"><i class="fa fa-fw fa-chevron-left"></i></a>
+      </small>
+      {{title}}
+    </h1>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <form method="POST" action=".">
+        <fieldset>
+          {{form.csrf_token}}
+          {{forms.text_field(form.name, autofocus=True)}}
+          {{forms.select_field(form.type)}}
+          {{forms.date_field(form.timestamp)}}
+          {{forms.text_field(form.place)}}
+          {{forms.text_field(form.address)}}
+          {{forms.textarea_field(form.rules)}}
+          {{forms.checkbox_field(form.is_closed)}}
+          {{forms.checkbox_field(form.is_public)}}
+
+          <button type="submit" class="btn btn-primary btn-block">
+            # if tournament_db
+              Update Tournament
+            # else
+              Create Tournament
+            # endif
+          </button>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+# endblock

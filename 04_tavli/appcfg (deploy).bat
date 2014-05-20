@@ -1,0 +1,1 @@
+cmd.exe /k C:\Python27\python.exe C:\Progra~1\Google\google_appengine\appcfg.py update main

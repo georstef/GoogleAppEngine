@@ -1,0 +1,56 @@
+# extends 'base.html'
+# import 'macro/utils.html' as utils
+
+# block content
+  <div class="page-header">
+    <h1><i class="fa fa-trophy"></i> {{title}}</h1>
+    <p>
+      <a class="btn btn-success btn-xs" href="{{url_for('tournament_create')}}"><i class="fa fa-trophy"></i> Create Tournament</a>
+    </p>
+  </div>
+
+  <div class="alert alert-info alert-dismissable {{'hide' if tournament_dbs|count > 0}}">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    There are no available Tournaments.
+  </div>
+
+  <table class="table table-bordered table-hover table-condensed {{'hide' if tournament_dbs|count == 0}}">
+    <thead>
+      <tr>
+        <th class="col-xs-2">ID</th>
+        <th class="col-xs-2">{{utils.order_by_link('name', 'Name')}}</th>
+        <th class="col-xs-2">{{utils.order_by_link('user_key', 'Creator')}}</th>
+        <th class="col-xs-2">{{utils.order_by_link('timestamp', 'Date')}}</th>
+        <th class="col-xs-2">{{utils.order_by_link('place', 'Place')}}</th>
+        <th class="col-xs-2">{{utils.order_by_link('is_closed', 'Closed')}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      # for tournament_db in tournament_dbs
+        <tr>
+          <td>
+            <a href="{{url_for('tournament_update', tournament_id=tournament_db.key.id())}}">
+              {{tournament_db.key.id()}}
+            </a>
+          </td>
+          <td>
+            <a href="{{url_for('tournament_view', tournament_id=tournament_db.key.id())}}">
+              {{tournament_db.name}}
+            </a>
+          </td>
+          <td>
+            <img src="{{tournament_db.user_key.get().avatar_url_size(36)}}" width="18" alt="Avatar of {{tournament_db.user_key.get().name}}">
+            {{tournament_db.user_key.get().name}}
+          </td>
+          <td>{{tournament_db.timestamp.strftime('%Y-%m-%d')}}</td>
+          <td>{{tournament_db.place}}</td>
+          <td>
+            # if tournament_db.is_closed
+              <i class="fa fa-check"></i>
+            # endif
+
+        </tr>
+      # endfor
+    </tbody>
+  </table>
+# endblock
