@@ -36,7 +36,7 @@ def contact_create():
 @auth.login_required
 def contact_list():
     contact_dbs, more_cursor = util.retrieve_dbs(
-        model.Contact.query(),
+        model.Contact.query(model.Contact.user_key==auth.current_user_key()),
         limit=util.param('limit', int),
         cursor=util.param('cursor'),
         order=util.param('order') or 'name'
@@ -63,6 +63,7 @@ def contact_view(contact_id):
         contact_db=contact_db
     )
 
+    
 @app.route('/contact/<int:contact_id>/update/', methods=['GET', 'POST'])
 @auth.login_required
 def contact_update(contact_id):
@@ -73,7 +74,7 @@ def contact_update(contact_id):
     if form.validate_on_submit():
         form.populate_obj(contact_db)
         contact_db.put()
-        flask.flash('New contact was successfully updated!', category='success')
+        flask.flash('The contact was successfully updated!', category='success')
         return flask.redirect(flask.url_for('contact_list', order='-modified'))
     return flask.render_template(
         'contact_update.html',
