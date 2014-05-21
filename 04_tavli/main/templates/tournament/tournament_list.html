@@ -5,12 +5,11 @@
   <div class="page-header">
     <h1><i class="fa fa-trophy"></i> {{title}}</h1>
     <p>
-      <a class="btn btn-success btn-xs" href="{{url_for('tournament_create')}}"><i class="fa fa-trophy"></i> Create Tournament</a>
+      <a class="btn btn-success btn-xs" href="{{url_for('tournament_create')}}"><i class="fa fa-plus"></i> Create Tournament</a>
     </p>
   </div>
 
-  <div class="alert alert-info alert-dismissable {{'hide' if tournament_dbs|count > 0}}">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <div class="alert alert-info {{'hide' if tournament_dbs|count > 0}}">
     There are no available Tournaments.
   </div>
 

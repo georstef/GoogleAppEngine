@@ -21,7 +21,6 @@ try:
     CURRENT_VERSION_TIMESTAMP = calendar.timegm(datetime.utcnow().timetuple())
   CURRENT_VERSION_DATE = datetime.utcfromtimestamp(CURRENT_VERSION_TIMESTAMP)
   APPLICATION_ID = app_identity.get_application_id()
-  ANALYTICS_TRACKING_ID = 'UA-51188624-1'
 
   import model
 
