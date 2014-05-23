@@ -90,8 +90,12 @@ DIR_MIN_SCRIPT = os.path.join(DIR_MIN, DIR_SCRIPT)
 DIR_LIB = os.path.join(DIR_MAIN, 'lib')
 DIR_LIBX = os.path.join(DIR_MAIN, 'libx')
 FILE_LIB = '%s.zip' % DIR_LIB
-FILE_LIB_REQUIREMENTS = 'requirements.txt'
-FILE_PIP_RUN = os.path.join(DIR_TEMP, 'pip.guard')
+FILE_REQUIREMENTS = 'requirements.txt'
+FILE_BOWER = 'bower.json'
+FILE_PACKAGE = 'package.json'
+FILE_PIP_GUARD = os.path.join(DIR_TEMP, 'pip.guard')
+FILE_NPM_GUARD = os.path.join(DIR_TEMP, 'npm.guard')
+FILE_BOWER_GUARD = os.path.join(DIR_TEMP, 'bower.guard')
 
 DIR_BIN = os.path.join(DIR_NODE_MODULES, '.bin')
 FILE_COFFEE = os.path.join(DIR_BIN, 'coffee')
@@ -298,17 +302,29 @@ def exec_pip_commands(command):
 
 
 def check_pip_should_run():
-  if not os.path.exists(FILE_PIP_RUN):
+  if not os.path.exists(FILE_PIP_GUARD):
     return True
-  return os.path.getmtime(FILE_PIP_RUN) < \
-      os.path.getmtime(FILE_LIB_REQUIREMENTS)
+  return os.path.getmtime(FILE_PIP_GUARD) < \
+      os.path.getmtime(FILE_REQUIREMENTS)
+
+
+def check_npm_should_run():
+  if not os.path.exists(FILE_NPM_GUARD):
+    return True
+  return os.path.getmtime(FILE_NPM_GUARD) < os.path.getmtime(FILE_PACKAGE)
+
+
+def check_bower_should_run():
+  if not os.path.exists(FILE_BOWER_GUARD):
+    return True
+  return os.path.getmtime(FILE_BOWER_GUARD) < os.path.getmtime(FILE_BOWER)
 
 
 def install_py_libs():
   if not check_pip_should_run():
     return
 
-  exec_pip_commands('pip install -q -r %s' % FILE_LIB_REQUIREMENTS)
+  exec_pip_commands('pip install -q -r %s' % FILE_REQUIREMENTS)
 
   exclude_ext = ['.pth', '.pyc', '.egg-info', '.dist-info']
   exclude_prefix = ['setuptools-', 'pip-', 'Pillow-']
@@ -345,8 +361,8 @@ def install_py_libs():
     copy = shutil.copy if os.path.isfile(src_path) else shutil.copytree
     copy(src_path, _get_dest(dir_))
 
-  with open(FILE_PIP_RUN, 'w') as pip_run:
-    pip_run.write('Prevents pip execution if newer than requirements.txt')
+  with open(FILE_PIP_GUARD, 'w') as pip_guard:
+    pip_guard.write('Prevents pip execution if newer than requirements.txt')
 
 
 def clean_py_libs():
@@ -354,23 +370,17 @@ def clean_py_libs():
   remove_file_dir(DIR_VENV)
 
 
-def get_dependencies(file_name):
-  with open(file_name) as json_file:
-    json_data = json.load(json_file)
-  dependencies = json_data.get('dependencies', dict()).keys()
-  return dependencies + json_data.get('devDependencies', dict()).keys()
-
-
 def install_dependencies():
-  for dependency in get_dependencies('package.json'):
-    if not os.path.exists(os.path.join(DIR_NODE_MODULES, dependency)):
-      os.system('npm install')
-      break
+  make_dirs(DIR_TEMP)
+  if check_npm_should_run():
+    with open(FILE_NPM_GUARD, 'w') as npm_guard:
+      npm_guard.write('Prevents npm execution if newer than package.json')
+    os.system('npm install')
 
-  for dependency in get_dependencies('bower.json'):
-    if not os.path.exists(os.path.join(DIR_BOWER_COMPONENTS, dependency)):
-      os.system('"%s" ext' % FILE_GRUNT)
-      break
+  if check_bower_should_run():
+    with open(FILE_BOWER_GUARD, 'w') as bower_guard:
+      bower_guard.write('Prevents bower execution if newer than bower.json')
+    os.system('"%s" ext' % FILE_GRUNT)
 
   install_py_libs()
 
@@ -388,7 +398,6 @@ def check_for_update():
         urllib.urlencode({'version': main.__version__}),
       )
     response = urllib2.urlopen(request)
-    make_dirs(DIR_TEMP)
     with open(FILE_UPDATE, 'w') as update_json:
       update_json.write(response.read())
   except urllib2.HTTPError:
@@ -442,7 +451,8 @@ def check_requirement(check_func):
 
 
 def find_gae_path():
-  if platform.system() == 'Windows':
+  is_windows = platform.system() == 'Windows'
+  if is_windows:
     gae_path = None
     for path in os.environ['PATH'].split(os.pathsep):
       if os.path.isfile(os.path.join(path, 'dev_appserver.py')):
@@ -453,7 +463,8 @@ def find_gae_path():
       gae_path = os.path.dirname(os.path.realpath(gae_path))
   if not gae_path:
     return ''
-  if not os.path.isfile(os.path.join(gae_path, 'gcloud')):
+  gcloud_exec = 'gcloud.cmd' if is_windows else 'gcloud'
+  if not os.path.isfile(os.path.join(gae_path, gcloud_exec)):
     return gae_path
   gae_path = os.path.join(gae_path, '..', 'platform', 'google_appengine')
   if os.path.exists:
@@ -512,7 +523,9 @@ def run_clean_all():
   clean_py_libs()
   clean_files()
   remove_file_dir(FILE_LIB)
-  remove_file_dir(FILE_PIP_RUN)
+  remove_file_dir(FILE_PIP_GUARD)
+  remove_file_dir(FILE_NPM_GUARD)
+  remove_file_dir(FILE_BOWER_GUARD)
 
 
 def run_minify():
