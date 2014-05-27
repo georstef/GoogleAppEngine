@@ -16,17 +16,25 @@
   <table class="table table-bordered table-hover table-condensed {{'hide' if tournament_dbs|count == 0}}">
     <thead>
       <tr>
+        <th class="col-xs-2">ID</th>
         <th class="col-xs-2">{{utils.order_by_link('name', 'Name')}}</th>
-        <th class="col-xs-2">{{utils.order_by_link('user_key', 'Creator')}}</th>
-        <th class="col-xs-2">{{utils.order_by_link('timestamp', 'Date')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('user_key', 'Creator')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('timestamp', 'Date')}}</th>
         <th class="col-xs-2">{{utils.order_by_link('place', 'Place')}}</th>
-        <th class="col-xs-2">{{utils.order_by_link('city', 'City')}}</th>
-        <th class="col-xs-2">{{utils.order_by_link('is_closed', 'Closed')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('address', 'Address')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('address', 'City')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('is_closed', 'Closed')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('is_public', 'Public')}}</th>
       </tr>
     </thead>
     <tbody>
       # for tournament_db in tournament_dbs
         <tr>
+          <td>
+            <a href="{{url_for('tournament_update', tournament_id=tournament_db.key.id())}}">
+              {{tournament_db.key.id()}}
+            </a>
+          </td>
           <td>
             <a href="{{url_for('tournament_view', tournament_id=tournament_db.key.id())}}">
               {{tournament_db.name}}
@@ -38,12 +46,18 @@
           </td>
           <td>{{tournament_db.timestamp.strftime('%Y-%m-%d')}}</td>
           <td>{{tournament_db.place}}</td>
+          <td>{{tournament_db.address}}</td>
           <td>{{tournament_db.city}}</td>
           <td>
             # if tournament_db.is_closed
               <i class="fa fa-check"></i>
             # endif
-
+          </td>
+          <td>
+            # if tournament_db.is_public
+              <i class="fa fa-check"></i>
+            # endif
+          </td>
         </tr>
       # endfor
     </tbody>

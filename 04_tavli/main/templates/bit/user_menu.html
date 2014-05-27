@@ -7,12 +7,14 @@
     </a>
     <ul class="dropdown-menu">
       <li><a href="{{url_for('profile')}}"><i class="fa fa-fw fa-edit"></i> Profile Settings</a></li>
-      # if current_user.admin
         <li class="divider"></li>
+      # if current_user.admin
         <li><a href="{{url_for('admin_config_update')}}"><i class="fa fa-fw fa-cog"></i> Admin Config</a></li>
         <li><a href="{{url_for('user_list', order='-modified', active=True)}}"><i class="fa fa-fw fa-group"></i> User List</a></li>
         <li class="divider"></li>
       # endif
+        <li><a href="{{url_for('my_tournament_list')}}"><i class="fa fa-fw fa-trophy"></i> My Tournaments</a></li>
+        <li class="divider"></li>
       <li><a href="{{url_for('signout')}}"><i class="fa fa-fw fa-sign-out"></i> Sign out</a></li>
     </ul>
   </li>

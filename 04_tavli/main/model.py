@@ -79,6 +79,7 @@ class Tournament(Base):
   timestamp = ndb.DateTimeProperty(default='')
   place = ndb.StringProperty(default='')
   address = ndb.StringProperty(default='')
+  city = ndb.StringProperty(default='')
   rules = ndb.TextProperty(default='')
   is_closed = ndb.BooleanProperty(default=False)
   is_public = ndb.BooleanProperty(default=False)
@@ -89,6 +90,7 @@ class Tournament(Base):
       'timestamp',
       'place',
       'address',
+      'city',
       'rules',
       'is_closed',
       'is_public',
