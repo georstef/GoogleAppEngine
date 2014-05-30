@@ -1,6 +1,8 @@
 # coding: utf-8
 
+from google.appengine.ext import ndb
 import hashlib
+import iso
 
 
 class BaseX(object):
@@ -33,3 +35,11 @@ class UserX(object):
         'size': '&s=%d' % size if size > 0 else '',
       }
   avatar_url = property(avatar_url_size)
+
+
+class TournamentX(object):
+  @ndb.ComputedProperty
+  def country_name(self):
+    if self.country in iso.ISO_3166:
+      return iso.ISO_3166[self.country]
+    return 'N/A'

@@ -61,6 +61,7 @@ class UserUpdateForm(wtf.Form):
       [wtf.validators.optional(), wtf.validators.email()],
       filters=[util.email_filter],
     )
+  birthdate = wtf.DateField('Birthdate', [wtf.validators.optional()])
   admin = wtf.BooleanField('Admin')
   active = wtf.BooleanField('Active')
   permissions = wtf.SelectMultipleField('Permissions',
@@ -151,6 +152,9 @@ class UserMergeForm(wtf.Form):
   email = wtf.StringField('Email (merged)',
       [wtf.validators.optional(), wtf.validators.email()],
       filters=[util.email_filter],
+    )
+  birthdate = wtf.DateField('Birthdate (merged)',
+      [wtf.validators.optional()],
     )
 
 

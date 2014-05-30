@@ -5,12 +5,14 @@ import datetime
 import auth
 import model
 import util
+import iso
 
 from main import app
 
 
 class TournamentUpdateForm(wtf.Form):
   TYPE_CHOICES = [(t, t.replace('-', ' ').title()) for t in model.Tournament.type._choices]
+  COUNTRY_CHOICES = sorted([(k, unicode(v, 'utf-8')) for k, v in iso.ISO_3166.iteritems()], key=lambda tup: tup[1])
 
   name = wtf.StringField('Name', [wtf.validators.required()], filters=[util.strip_filter])
   type = wtf.SelectField('Type', [wtf.validators.optional()], choices=TYPE_CHOICES)
@@ -18,6 +20,7 @@ class TournamentUpdateForm(wtf.Form):
   place = wtf.StringField('Place', [wtf.validators.optional()], filters=[util.strip_filter])
   address = wtf.StringField('Address', [wtf.validators.optional()], filters=[util.strip_filter])
   city = wtf.StringField('City', [wtf.validators.optional()], filters=[util.strip_filter])
+  country = wtf.SelectField('Country', [wtf.validators.optional()], choices=COUNTRY_CHOICES)
   rules = wtf.TextAreaField('Rules', [wtf.validators.optional()], filters=[util.strip_filter])
   is_closed = wtf.BooleanField(default=False)
   is_public = wtf.BooleanField(default=False)

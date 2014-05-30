@@ -61,6 +61,7 @@ class ProfileUpdateForm(wtf.Form):
       [wtf.validators.optional(), wtf.validators.email()],
       filters=[util.email_filter],
     )
+  birthdate = wtf.DateField('Birthdate', [wtf.validators.optional()])
 
 
 @app.route('/_s/profile/', endpoint='profile_service')

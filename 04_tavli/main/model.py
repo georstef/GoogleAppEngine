@@ -5,6 +5,7 @@ from google.appengine.ext import ndb
 import config
 import modelx
 import util
+import iso
 
 
 class Base(ndb.Model, modelx.BaseX):
@@ -55,6 +56,7 @@ class User(Base, modelx.UserX):
   name = ndb.StringProperty(required=True)
   username = ndb.StringProperty(required=True)
   email = ndb.StringProperty(default='')
+  birthdate = ndb.DateProperty()
   auth_ids = ndb.StringProperty(repeated=True)
   active = ndb.BooleanProperty(default=True)
   admin = ndb.BooleanProperty(default=False)
@@ -66,13 +68,14 @@ class User(Base, modelx.UserX):
       'auth_ids',
       'avatar_url',
       'email',
+      'birthdate',
       'name',
       'username',
       'permissions',
     })
 
 
-class Tournament(Base):
+class Tournament(Base, modelx.TournamentX):
   user_key = ndb.KeyProperty(kind=User, required=True)
   name = ndb.StringProperty(required=True)
   type = ndb.StringProperty(default='single-elimination', choices=['single-elimination', 'double-elimination'])
@@ -80,6 +83,7 @@ class Tournament(Base):
   place = ndb.StringProperty(default='')
   address = ndb.StringProperty(default='')
   city = ndb.StringProperty(default='')
+  country = ndb.StringProperty(default='', choices=iso.ISO_3166.keys())
   rules = ndb.TextProperty(default='')
   is_closed = ndb.BooleanProperty(default=False)
   is_public = ndb.BooleanProperty(default=False)
@@ -91,6 +95,7 @@ class Tournament(Base):
       'place',
       'address',
       'city',
+      'country',
       'rules',
       'is_closed',
       'is_public',
