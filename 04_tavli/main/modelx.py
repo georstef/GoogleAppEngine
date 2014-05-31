@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from datetime import datetime
 from google.appengine.ext import ndb
 import hashlib
 import iso
@@ -43,3 +44,11 @@ class TournamentX(object):
     if self.country in iso.ISO_3166:
       return iso.ISO_3166[self.country]
     return 'N/A'
+
+  @ndb.ComputedProperty
+  def full_address(self):
+    return ', '.join(x for x in [self.address, self.city, self.country_name] if x)
+
+  @ndb.ComputedProperty
+  def is_past(self):
+    return self.timestamp < datetime.now()

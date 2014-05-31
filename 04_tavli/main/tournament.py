@@ -52,6 +52,7 @@ def tournament_update(tournament_id=0):
     )
 
 
+@app.route('/_s/tournament/', endpoint='tournament_list_service')
 @app.route('/tournament/')
 def tournament_list():
   tournament_dbs, more_cursor = util.retrieve_dbs(
@@ -61,6 +62,10 @@ def tournament_list():
       order=util.param('order') or '-timestamp',
       is_public=True,
     )
+
+  if flask.request.path.startswith('/_s/'):
+    return util.jsonify_model_dbs(tournament_dbs, more_cursor)
+
   return flask.render_template(
       'tournament/tournament_list.html',
       html_class='tournament-list',
@@ -70,6 +75,7 @@ def tournament_list():
     )
 
 
+@app.route('/_s/my/tournament/', endpoint='my_tournament_list_service')
 @app.route('/my/tournament/')
 @auth.login_required
 def my_tournament_list():
@@ -80,6 +86,10 @@ def my_tournament_list():
       order=util.param('order') or '-timestamp',
       user_key=auth.current_user_key(),
     )
+
+  if flask.request.path.startswith('/_s/'):
+    return util.jsonify_model_dbs(tournament_dbs, more_cursor)
+
   return flask.render_template(
       'tournament/my_tournament_list.html',
       html_class='my-tournament-list',

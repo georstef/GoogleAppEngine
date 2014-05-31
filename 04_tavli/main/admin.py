@@ -2,6 +2,7 @@
 
 from flask.ext import wtf
 from google.appengine.api import app_identity
+from google.appengine.ext import ndb
 import flask
 
 import auth
@@ -61,3 +62,20 @@ def admin_config_update():
       instances_url=instances_url,
       has_json=True,
     )
+
+
+###############################################################################
+# Helpers
+###############################################################################
+@app.route('/_s/admin/tournament/update/')
+@auth.admin_required
+def admin_tournament_update():
+  tournament_dbs, tournament_cursor = util.retrieve_dbs(
+      model.Tournament.query(),
+      limit=util.param('limit', int) or config.DEFAULT_DB_LIMIT,
+      order=util.param('order'),
+      cursor=util.param('cursor'),
+    )
+
+  ndb.put_multi(tournament_dbs)
+  return util.jsonify_model_dbs(tournament_dbs, tournament_cursor)

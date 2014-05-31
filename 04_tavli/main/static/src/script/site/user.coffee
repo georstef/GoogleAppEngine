@@ -92,6 +92,7 @@ select_default_user = (user_key) ->
       ($ 'input[name=username]').val user_db.username
       ($ 'input[name=name]').val user_db.name
       ($ 'input[name=email]').val user_db.email
+      ($ 'input[name=birthdate]').val user_db.birthdate
       break
 
 
