@@ -20,3 +20,6 @@ $ -> ($ 'html.user-merge').each ->
 
 $ -> ($ 'html.admin-config').each ->
   init_admin_config()
+
+$ -> ($ 'html.tournament-update').each ->
+  init_tournament_update()

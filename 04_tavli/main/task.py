@@ -15,7 +15,6 @@ def send_mail_notification(subject, body, **kwargs):
     return
   brand_name = config.CONFIG_DB.brand_name
   sender = '%s <%s>' % (brand_name, config.CONFIG_DB.feedback_email)
-  subject = '[%s] %s' % (brand_name, subject)
   deferred.defer(mail.send_mail, sender, sender, subject, body, **kwargs)
 
 

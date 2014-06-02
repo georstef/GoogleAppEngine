@@ -47,7 +47,7 @@ class TournamentX(object):
 
   @ndb.ComputedProperty
   def full_address(self):
-    return ', '.join(x for x in [self.address, self.city, self.country_name] if x)
+    return ', '.join(x for x in [self.address, self.city, self.country_name] if x and x != 'N/A')
 
   @ndb.ComputedProperty
   def is_past(self):

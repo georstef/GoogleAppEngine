@@ -59,5 +59,6 @@ SCRIPTS = [
         'src/script/site/profile.coffee',
         'src/script/site/signin.coffee',
         'src/script/site/user.coffee',
+        'src/script/site/tournament.coffee',
       ]),
   ]

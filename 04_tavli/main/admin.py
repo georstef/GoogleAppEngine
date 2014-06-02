@@ -79,3 +79,25 @@ def admin_tournament_update():
 
   ndb.put_multi(tournament_dbs)
   return util.jsonify_model_dbs(tournament_dbs, tournament_cursor)
+
+
+@app.route('/_s/admin/user/update/')
+@auth.admin_required
+def admin_user_update():
+  user_dbs, user_cursor = util.retrieve_dbs(
+      model.User.query(),
+      limit=util.param('limit', int) or config.DEFAULT_DB_LIMIT,
+      order=util.param('order'),
+      cursor=util.param('cursor'),
+    )
+
+  updated_dbs = []
+  for user_db in user_dbs:
+    if not user_db.birthdate:
+      user_db.birthdate = None
+      updated_dbs.append(user_db)
+
+  if updated_dbs:
+    ndb.put_multi(updated_dbs)
+
+  return util.jsonify_model_dbs(updated_dbs, user_cursor)
