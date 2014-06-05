@@ -112,7 +112,7 @@ def feedback():
 
   form = FeedbackForm(obj=auth.current_user_db())
   if form.validate_on_submit():
-    body = '%s\n\n%s' % (form.message.data, form.email.data)
+    body = form.message.data
     kwargs = {'reply_to': form.email.data} if form.email.data else {}
     task.send_mail_notification(form.subject.data, body, **kwargs)
     flask.flash('Thank you for your feedback!', category='success')

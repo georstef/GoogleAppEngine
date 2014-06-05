@@ -25,6 +25,7 @@ class ConfigUpdateForm(wtf.Form):
   notify_on_new_user = wtf.BooleanField('Send an email notification when a user signs up')
   twitter_consumer_key = wtf.StringField('Consumer Key', filters=[util.strip_filter])
   twitter_consumer_secret = wtf.StringField('Consumer Secret', filters=[util.strip_filter])
+  google_public_api_key = wtf.StringField('Public API key', filters=[util.strip_filter])
 
 
 @app.route('/_s/admin/config/', endpoint='admin_config_update_service')

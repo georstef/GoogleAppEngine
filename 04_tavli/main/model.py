@@ -3,12 +3,13 @@
 from google.appengine.ext import ndb
 
 import config
+import modelq
 import modelx
 import util
 import iso
 
 
-class Base(ndb.Model, modelx.BaseX):
+class Base(ndb.Model, modelq.Base):
   created = ndb.DateTimeProperty(auto_now_add=True)
   modified = ndb.DateTimeProperty(auto_now=True)
   version = ndb.IntegerProperty(default=config.CURRENT_VERSION_TIMESTAMP)
@@ -22,7 +23,7 @@ class Base(ndb.Model, modelx.BaseX):
     }
 
 
-class Config(Base, modelx.ConfigX):
+class Config(Base, modelx.Config):
   analytics_id = ndb.StringProperty(default='')
   announcement_html = ndb.TextProperty(default='')
   announcement_type = ndb.StringProperty(default='info', choices=[
@@ -36,6 +37,7 @@ class Config(Base, modelx.ConfigX):
   notify_on_new_user = ndb.BooleanProperty(default=True)
   twitter_consumer_key = ndb.StringProperty(default='')
   twitter_consumer_secret = ndb.StringProperty(default='')
+  google_public_api_key = ndb.StringProperty(default='')
 
   _PROPERTIES = Base._PROPERTIES.union({
       'analytics_id',
@@ -49,10 +51,11 @@ class Config(Base, modelx.ConfigX):
       'notify_on_new_user',
       'twitter_consumer_key',
       'twitter_consumer_secret',
+      'google_public_api_key',
     })
 
 
-class User(Base, modelx.UserX):
+class User(Base, modelx.User, modelq.User):
   name = ndb.StringProperty(required=True)
   username = ndb.StringProperty(required=True)
   email = ndb.StringProperty(default='')

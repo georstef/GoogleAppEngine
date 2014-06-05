@@ -16,7 +16,7 @@ class TournamentUpdateForm(wtf.Form):
 
   name = wtf.StringField('Name', [wtf.validators.required()], filters=[util.strip_filter])
   type = wtf.SelectField('Type', [wtf.validators.optional()], choices=TYPE_CHOICES)
-  timestamp = wtf.DateField('Date', [wtf.validators.required()])
+  timestamp = wtf.DateTimeField('Date/Time', [wtf.validators.required()], format='%Y-%m-%dT%H:%M')
   place = wtf.StringField('Place', [wtf.validators.optional()], filters=[util.strip_filter])
   address = wtf.StringField('Address', [wtf.validators.optional()], filters=[util.strip_filter])
   city = wtf.StringField('City', [wtf.validators.optional()], filters=[util.strip_filter])
@@ -39,7 +39,6 @@ def tournament_update(tournament_id=0):
 
   form = TournamentUpdateForm(obj=tournament_db)
   if form.validate_on_submit():
-    form.timestamp.data = datetime.datetime.combine(form.timestamp.data, datetime.time(00, 00))
     form.populate_obj(tournament_db)
     tournament_db.put()
     return flask.redirect(flask.url_for('my_tournament_list'))
@@ -55,13 +54,7 @@ def tournament_update(tournament_id=0):
 @app.route('/_s/tournament/', endpoint='tournament_list_service')
 @app.route('/tournament/')
 def tournament_list():
-  tournament_dbs, more_cursor = util.retrieve_dbs(
-      model.Tournament.query(),
-      limit=util.param('limit', int),
-      cursor=util.param('cursor'),
-      order=util.param('order') or '-timestamp',
-      is_public=True,
-    )
+  tournament_dbs, more_cursor = model.Tournament.get_dbs(order='-timestamp', is_public=True)
 
   if flask.request.path.startswith('/_s/'):
     return util.jsonify_model_dbs(tournament_dbs, more_cursor)
@@ -79,13 +72,7 @@ def tournament_list():
 @app.route('/my/tournament/')
 @auth.login_required
 def my_tournament_list():
-  tournament_dbs, more_cursor = util.retrieve_dbs(
-      model.Tournament.query(),
-      limit=util.param('limit', int),
-      cursor=util.param('cursor'),
-      order=util.param('order') or '-timestamp',
-      user_key=auth.current_user_key(),
-    )
+  tournament_dbs, more_cursor = model.Tournament.get_dbs(order='-timestamp', user_key=auth.current_user_key())
 
   if flask.request.path.startswith('/_s/'):
     return util.jsonify_model_dbs(tournament_dbs, more_cursor)

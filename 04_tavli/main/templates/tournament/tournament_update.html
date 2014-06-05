@@ -17,7 +17,7 @@
           {{form.csrf_token}}
           {{forms.text_field(form.name, autofocus=True)}}
           {{forms.select_field(form.type)}}
-          {{forms.date_field(form.timestamp)}}
+          {{forms.input_field(form.timestamp, type='datetime-local')}}
           {{forms.text_field(form.place)}}
           {{forms.text_field(form.address)}}
           {{forms.text_field(form.city)}}

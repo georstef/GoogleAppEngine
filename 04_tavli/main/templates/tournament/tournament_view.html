@@ -8,15 +8,47 @@
       </small>
       {{title}}
     </h1>
+    # if current_user.id == tournament_db.user_key.id()
+      <p>
+        <a class="btn btn-info btn-xs" href="{{url_for('tournament_update', tournament_id=tournament_db.key.id())}}"><i class="fa fa-edit"></i> Edit Tournament</a>
+      </p>
+   # endif
   </div>
-  <p>{{tournament_db.name}}</p>
-  <p>{{tournament_db.type}}</p>
-  <p>{{tournament_db.timestamp}}</p>
-  <p>{{tournament_db.place}}</p>
-  <p>{{tournament_db.address}}</p>
-  <p>{{tournament_db.city}}</p>
-  <p>{{tournament_db.country_name}}</p>
-  <p>{{tournament_db.rules}}</p>
-  <p>{{'Closed' if tournament_db.is_closed else 'Open'}}</p>
-  <p>{{'Public' if tournament_db.is_public else 'Private'}}</p>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <table class="table table-hover">
+        <tr>
+          <th>Type</th>
+          <td>{{tournament_db.type}}</td>
+        </tr>
+        <tr>
+          <th>Date/Time</th>
+          <td>{{tournament_db.timestamp.strftime('%Y-%m-%d %H:%M')}}</td>
+        </tr>
+        <tr>
+          <th>Place</th>
+          <td>{{tournament_db.place}}</td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td>{{tournament_db.full_address}}</td>
+        </tr>
+        <tr>
+          <th>Rules</th>
+          <td>{{tournament_db.rules}}</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>{{'Closed' if tournament_db.is_closed else 'Open'}}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-sm-6">
+      # set address = tournament_db.full_address.replace(' ', '+')
+      <a href="https://www.google.com/maps/search/{{address}}/" target="_blank">
+        <img class="img-responsive img-thumbnail" src="http://maps.googleapis.com/maps/api/staticmap?center={{address}}&zoom=15&size=400x400&markers=color:red|{{address}}&sensor=false"></a>
+      </a>
+    </div>
+  </div>
 # endblock
