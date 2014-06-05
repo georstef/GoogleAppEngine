@@ -47,7 +47,7 @@
     <div class="col-sm-6">
       # set address = tournament_db.full_address.replace(' ', '+')
       <a href="https://www.google.com/maps/search/{{address}}/" target="_blank">
-        <img class="img-responsive img-thumbnail" src="http://maps.googleapis.com/maps/api/staticmap?center={{address}}&zoom=15&size=400x400&markers=color:red|{{address}}&sensor=false"></a>
+        <img class="img-responsive img-thumbnail" src="http://maps.googleapis.com/maps/api/staticmap?center={{address}}&zoom=15&size=400x400&markers=color:red|{{address}}&sensor=false&key={{config.CONFIG_DB.google_public_api_key}}"></a>
       </a>
     </div>
   </div>
