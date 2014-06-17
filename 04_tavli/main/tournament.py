@@ -1,6 +1,5 @@
 from flask.ext import wtf
 import flask
-import datetime
 
 import auth
 import model
@@ -54,17 +53,17 @@ def tournament_update(tournament_id=0):
 @app.route('/_s/tournament/', endpoint='tournament_list_service')
 @app.route('/tournament/')
 def tournament_list():
-  tournament_dbs, more_cursor = model.Tournament.get_dbs(order='-timestamp', is_public=True)
+  tournament_dbs, next_cursor = model.Tournament.get_dbs(order='-timestamp', is_public=True)
 
   if flask.request.path.startswith('/_s/'):
-    return util.jsonify_model_dbs(tournament_dbs, more_cursor)
+    return util.jsonify_model_dbs(tournament_dbs, next_cursor)
 
   return flask.render_template(
       'tournament/tournament_list.html',
       html_class='tournament-list',
       title='Tournaments',
       tournament_dbs=tournament_dbs,
-      more_url=util.generate_more_url(more_cursor),
+      next_url=util.generate_next_url(next_cursor),
     )
 
 
@@ -72,17 +71,17 @@ def tournament_list():
 @app.route('/my/tournament/')
 @auth.login_required
 def my_tournament_list():
-  tournament_dbs, more_cursor = model.Tournament.get_dbs(order='-timestamp', user_key=auth.current_user_key())
+  tournament_dbs, next_cursor = model.Tournament.get_dbs(order='-timestamp', user_key=auth.current_user_key())
 
   if flask.request.path.startswith('/_s/'):
-    return util.jsonify_model_dbs(tournament_dbs, more_cursor)
+    return util.jsonify_model_dbs(tournament_dbs, next_cursor)
 
   return flask.render_template(
       'tournament/my_tournament_list.html',
       html_class='my-tournament-list',
       title='My Tournaments',
       tournament_dbs=tournament_dbs,
-      more_url=util.generate_more_url(more_cursor),
+      next_url=util.generate_next_url(next_cursor),
     )
 
 

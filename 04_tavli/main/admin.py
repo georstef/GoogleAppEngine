@@ -71,7 +71,7 @@ def admin_config_update():
 @app.route('/_s/admin/tournament/update/')
 @auth.admin_required
 def admin_tournament_update():
-  tournament_dbs, tournament_cursor = util.retrieve_dbs(
+  tournament_dbs, tournament_cursor = util.get_dbs(
       model.Tournament.query(),
       limit=util.param('limit', int) or config.DEFAULT_DB_LIMIT,
       order=util.param('order'),
@@ -85,7 +85,7 @@ def admin_tournament_update():
 @app.route('/_s/admin/user/update/')
 @auth.admin_required
 def admin_user_update():
-  user_dbs, user_cursor = util.retrieve_dbs(
+  user_dbs, user_cursor = util.get_dbs(
       model.User.query(),
       limit=util.param('limit', int) or config.DEFAULT_DB_LIMIT,
       order=util.param('order'),
