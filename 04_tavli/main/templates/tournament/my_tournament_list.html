@@ -18,6 +18,7 @@
       <tr>
         <th class="col-xs-2">ID</th>
         <th class="col-xs-2">{{utils.order_by_link('name', 'Name')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('user_count', 'Users')}}</th>
         <th class="col-xs-2">{{utils.order_by_link('timestamp', 'Date')}}</th>
         <th class="col-xs-2">{{utils.order_by_link('place', 'Place')}}</th>
         <th class="col-xs-2">{{utils.order_by_link('full_address', 'Address')}}</th>
@@ -38,6 +39,7 @@
               {{tournament_db.name}}
             </a>
           </td>
+          <td>{{tournament_db.user_count or '-'}}</td>
           <td>
             {{tournament_db.timestamp.strftime('%Y-%m-%d %H:%M')}}
           </td>

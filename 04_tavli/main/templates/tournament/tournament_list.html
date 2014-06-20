@@ -17,6 +17,7 @@
     <thead>
       <tr>
         <th class="col-xs-2">{{utils.order_by_link('name', 'Name')}}</th>
+        <th class="col-xs-1">{{utils.order_by_link('user_count', 'Users')}}</th>
         <th class="col-xs-2">{{utils.order_by_link('user_key', 'Creator')}}</th>
         <th class="col-xs-2">{{utils.order_by_link('timestamp', 'Date')}}</th>
         <th class="col-xs-2">{{utils.order_by_link('place', 'Place')}}</th>
@@ -28,13 +29,14 @@
       # for tournament_db in tournament_dbs
         <tr>
           <td>
+            # if current_user.id == tournament_db.user_key.id()
+              <a class="pull-right" href="{{url_for('tournament_update', tournament_id=tournament_db.key.id())}}"><i class="fa fa-edit"></i></a>
+            # endif
             <a href="{{url_for('tournament_view', tournament_id=tournament_db.key.id())}}">
               {{tournament_db.name}}
             </a>
-            # if current_user.id == tournament_db.user_key.id()
-              <a class="btn btn-info btn-xs" href="{{url_for('tournament_update', tournament_id=tournament_db.key.id())}}"><i class="fa fa-edit"></i></a>
-            # endif
           </td>
+          <td>{{tournament_db.user_count or '-'}}</td>
           <td>
             <img src="{{tournament_db.user_key.get().avatar_url_size(36)}}" width="18" alt="Avatar of {{tournament_db.user_key.get().name}}">
             {{tournament_db.user_key.get().name}}
@@ -48,7 +50,7 @@
             # if tournament_db.is_closed
               <i class="fa fa-check"></i>
             # endif
-
+          </td>
         </tr>
       # endfor
     </tbody>

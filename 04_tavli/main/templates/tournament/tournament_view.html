@@ -12,12 +12,12 @@
       <p>
         <a class="btn btn-info btn-xs" href="{{url_for('tournament_update', tournament_id=tournament_db.key.id())}}"><i class="fa fa-edit"></i> Edit Tournament</a>
       </p>
-   # endif
+    # endif
   </div>
 
   <div class="row">
     <div class="col-sm-6">
-      <table class="table table-hover">
+      <table class="table table-hover table-bordered">
         <tr>
           <th>Type</th>
           <td>{{tournament_db.type}}</td>
@@ -43,12 +43,47 @@
           <td>{{'Closed' if tournament_db.is_closed else 'Open'}}</td>
         </tr>
       </table>
+
+      # if not tournament_db.is_user_registered(current_user.user_db)
+        <form action="{{url_for('tournament_register', tournament_id=tournament_db.key.id())}}" method="post">
+          <button type="submit" class="btn btn-success btn-lg btn-block btn-loading" data-loading-text="Registering..">
+            Register
+          </button>
+        </form>
+      # endif
     </div>
     <div class="col-sm-6">
       # set address = tournament_db.full_address.replace(' ', '+')
       <a href="https://www.google.com/maps/search/{{address}}/" target="_blank">
-        <img class="img-responsive img-thumbnail" src="http://maps.googleapis.com/maps/api/staticmap?center={{address}}&zoom=15&size=400x400&markers=color:red|{{address}}&sensor=false&key={{config.CONFIG_DB.google_public_api_key}}"></a>
+        <img class="img-responsive img-thumbnail" src="http://maps.googleapis.com/maps/api/staticmap?center={{address}}&zoom=15&size=400x223&markers=color:red|{{address}}&sensor=false&key={{config.CONFIG_DB.google_public_api_key}}"></a>
       </a>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row {{'hide' if not user_tournament_dbs}}">
+    <div class="col-sm-6">
+      <table class="table table-hover table-bordered">
+        <thead>
+          <tr>
+            <th>Registered Users</th>
+            <th>#</th>
+          </tr>
+        </thead>
+        <tbody>
+          # for user_tournament_db in user_tournament_dbs
+            # set user_db = user_tournament_db.user_key.get()
+            <tr class="{{'active' if user_db.key.id() == current_user.id}}">
+              <td>
+                <img src="{{user_db.avatar_url_size(36)}}" width="18" alt="Avatar of {{user_db.name}}">
+                {{user_db.name}}
+              </td>
+              <td>{{user_tournament_db.position or '-'}}</td>
+            </tr>
+          # endfor
+        </tbody>
+      </table>
     </div>
   </div>
 # endblock

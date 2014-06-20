@@ -9,7 +9,7 @@
         <a href="{{url_for('user_list', order='-modified', active=user_db.active)}}" class="text-muted" title="Back to user list"><i class="fa fa-fw fa-chevron-left"></i></a>
       </small>
       {{title}}
-      # if current_user.id == user_db.key.id()
+      # if user_db.key and current_user.id == user_db.key.id()
         <small><i class="fa fa-hand-o-left" title="You"></i></small>
       # endif
     </h1>
@@ -22,7 +22,7 @@
         {{forms.text_field(form.username, autocomplete='off')}}
         {{forms.email_field(form.email)}}
         {{forms.date_field(form.birthdate)}}
-        # if current_user.id != user_db.key.id()
+        # if not user_db.key or current_user.id != user_db.key.id()
           {{forms.checkbox_field(form.admin)}}
           {{forms.checkbox_field(form.active)}}
         # else
@@ -67,7 +67,7 @@
     <div class="row">
       <div class="col-md-6 col-md-offset-3">
         <button type="submit" class="btn btn-primary btn-lg btn-block btn-loading" data-loading-text="Updating..">
-          Update
+          {{'Update' if user_db.key else 'Create'}}
         </button>
       </div>
     </div>

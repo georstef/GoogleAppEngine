@@ -73,12 +73,17 @@ class UserUpdateForm(wtf.Form):
     UserUpdateForm._permission_choices.add(permission)
 
 
+@app.route('/user/create/', methods=['GET', 'POST'], endpoint='user_create')
 @app.route('/user/<int:user_id>/update/', methods=['GET', 'POST'])
 @auth.admin_required
-def user_update(user_id):
-  user_db = model.User.get_by_id(user_id)
-  if not user_db:
-    flask.abort(404)
+def user_update(user_id=None):
+
+  if user_id:
+    user_db = model.User.get_by_id(user_id)
+    if not user_db:
+      flask.abort(404)
+  else:
+    user_db = model.User(username='', name='')
 
   form = UserUpdateForm(obj=user_db)
   for permission in user_db.permissions:
@@ -87,11 +92,11 @@ def user_update(user_id):
   if form.validate_on_submit():
     if not util.is_valid_username(form.username.data):
       form.username.errors.append('This username is invalid.')
-    elif not is_username_available(form.username.data, user_db):
+    elif not model.User.is_username_available(form.username.data, user_db):
       form.username.errors.append('This username is already taken.')
     else:
       form.populate_obj(user_db)
-      if auth.current_user_id() == user_db.key.id():
+      if user_db.key and auth.current_user_id() == user_db.key.id():
         user_db.admin = True
         user_db.active = True
       user_db.put()
@@ -104,7 +109,7 @@ def user_update(user_id):
 
   return flask.render_template(
       'user/user_update.html',
-      title=user_db.name,
+      title=user_db.name or 'New User',
       html_class='user-update',
       form=form,
       user_db=user_db,
@@ -223,12 +228,3 @@ def merge_user_dbs(user_db, deprecated_keys):
     if not deprecated_db.username.startswith('_'):
       deprecated_db.username = '_%s' % deprecated_db.username
   ndb.put_multi(deprecated_dbs)
-
-
-###############################################################################
-# Helpers
-###############################################################################
-def is_username_available(username, self_db=None):
-  user_dbs, user_cursor = model.User.get_dbs(username=username, limit=2)
-  c = len(user_dbs)
-  return not (c == 2 or c == 1 and self_db and self_db.key != user_dbs[0].key)

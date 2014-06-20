@@ -53,7 +53,7 @@ def tournament_update(tournament_id=0):
 @app.route('/_s/tournament/', endpoint='tournament_list_service')
 @app.route('/tournament/')
 def tournament_list():
-  tournament_dbs, next_cursor = model.Tournament.get_dbs(order='-timestamp', is_public=True)
+  tournament_dbs, next_cursor = model.Tournament.get_dbs(is_public=True)
 
   if flask.request.path.startswith('/_s/'):
     return util.jsonify_model_dbs(tournament_dbs, next_cursor)
@@ -71,7 +71,7 @@ def tournament_list():
 @app.route('/my/tournament/')
 @auth.login_required
 def my_tournament_list():
-  tournament_dbs, next_cursor = model.Tournament.get_dbs(order='-timestamp', user_key=auth.current_user_key())
+  tournament_dbs, next_cursor = model.Tournament.get_dbs(user_key=auth.current_user_key())
 
   if flask.request.path.startswith('/_s/'):
     return util.jsonify_model_dbs(tournament_dbs, next_cursor)
@@ -90,9 +90,34 @@ def tournament_view(tournament_id):
   tournament_db = model.Tournament.get_by_id(tournament_id)
   if not tournament_db:
     flask.abort(404)
+
+  user_tournament_dbs, _ = tournament_db.get_user_tournament_dbs()
+
   return flask.render_template(
       'tournament/tournament_view.html',
       html_class='tournament-view',
       title=tournament_db.name,
       tournament_db=tournament_db,
+      user_tournament_dbs=user_tournament_dbs,
     )
+
+
+@app.route('/tournament/<int:tournament_id>/register/', methods=['POST'])
+@auth.login_required
+def tournament_register(tournament_id):
+  tournament_db = model.Tournament.get_by_id(tournament_id)
+  if not tournament_db:
+    flask.abort(404)
+
+  # TODO: Check if it's open for registrations first
+
+  user_tournament_db = model.UserTournament.get_or_insert(
+      str(auth.current_user_id()),
+      parent=tournament_db.key,
+      tournament_key=tournament_db.key,
+      user_key=auth.current_user_key(),
+    )
+
+  user_tournament_db.put()
+  flask.flash('Awesome! You are in..', category='success')
+  return flask.redirect(flask.url_for('tournament_view', tournament_id=tournament_id))

@@ -8,6 +8,7 @@ from google.appengine.ext import ndb
 
 import iso
 import model
+import util
 
 
 class Tournament(model.Base):
@@ -37,6 +38,11 @@ class Tournament(model.Base):
   def is_past(self):
     return self.timestamp < datetime.now()
 
+  @ndb.ComputedProperty
+  def user_count(self):
+    user_tournament_qry = model.UserTournament.query(ancestor=self.key)
+    return user_tournament_qry.count(keys_only=True)
+
   _PROPERTIES = model.Base._PROPERTIES.union({
       'name',
       'type',
@@ -49,3 +55,16 @@ class Tournament(model.Base):
       'is_closed',
       'is_public',
     })
+
+  @classmethod
+  def get_dbs(cls, order=None, **kwargs):
+    return super(Tournament, cls).get_dbs(
+        order=order or util.param('order') or '-timestamp',
+        **kwargs
+      )
+
+  def get_user_tournament_dbs(self):
+    return model.UserTournament.get_dbs(ancestor=self.key)
+
+  def is_user_registered(self, user_db):
+    return model.UserTournament.get_by_id(str(user_db.key.id()), parent=self.key)
