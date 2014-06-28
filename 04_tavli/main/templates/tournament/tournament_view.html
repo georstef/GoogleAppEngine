@@ -44,13 +44,22 @@
         </tr>
       </table>
 
-      # if not tournament_db.is_user_registered(current_user.user_db)
-        <form action="{{url_for('tournament_register', tournament_id=tournament_db.key.id())}}" method="post">
-          <button type="submit" class="btn btn-success btn-lg btn-block btn-loading" data-loading-text="Registering..">
-            Register
-          </button>
-        </form>
+      # if not tournament_db.is_closed
+        # if not tournament_db.is_user_registered(current_user.user_db)
+          <form action="{{url_for('tournament_register', tournament_id=tournament_db.key.id(), register_flag='register')}}" method="post">
+            <button type="submit" class="btn btn-success btn-lg btn-block btn-loading" data-loading-text="Registering..">
+              Register
+            </button>
+          </form>
+        # else
+          <form action="{{url_for('tournament_register', tournament_id=tournament_db.key.id(), register_flag='unregister')}}" method="post">
+            <button type="submit" class="btn btn-link btn-block btn-loading" data-loading-text="Unregistering..">
+              Unregister
+            </button>
+          </form>
+        # endif
       # endif
+
     </div>
     <div class="col-sm-6">
       # set address = tournament_db.full_address.replace(' ', '+')

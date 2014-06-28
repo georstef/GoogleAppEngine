@@ -5,6 +5,7 @@ import auth
 import model
 import util
 import iso
+import task
 
 from main import app
 
@@ -47,7 +48,7 @@ def tournament_update(tournament_id=0):
       title='%s' % ('Create Tournament' if tournament_id == 0 else tournament_db.name),
       form=form,
       tournament_db=tournament_db,
-    )
+  )
 
 
 @app.route('/_s/tournament/', endpoint='tournament_list_service')
@@ -64,7 +65,7 @@ def tournament_list():
       title='Tournaments',
       tournament_dbs=tournament_dbs,
       next_url=util.generate_next_url(next_cursor),
-    )
+  )
 
 
 @app.route('/_s/my/tournament/', endpoint='my_tournament_list_service')
@@ -82,7 +83,7 @@ def my_tournament_list():
       title='My Tournaments',
       tournament_dbs=tournament_dbs,
       next_url=util.generate_next_url(next_cursor),
-    )
+  )
 
 
 @app.route('/tournament/<int:tournament_id>/')
@@ -99,25 +100,41 @@ def tournament_view(tournament_id):
       title=tournament_db.name,
       tournament_db=tournament_db,
       user_tournament_dbs=user_tournament_dbs,
-    )
+  )
 
 
-@app.route('/tournament/<int:tournament_id>/register/', methods=['POST'])
+@app.route('/tournament/<int:tournament_id>/<register_flag>/', methods=['POST'])
 @auth.login_required
-def tournament_register(tournament_id):
+def tournament_register(tournament_id, register_flag):
   tournament_db = model.Tournament.get_by_id(tournament_id)
   if not tournament_db:
     flask.abort(404)
 
-  # TODO: Check if it's open for registrations first
+  # TODO: Check if it's open for registrations first - george -> should we add an [open_for_registration] field ???
 
   user_tournament_db = model.UserTournament.get_or_insert(
       str(auth.current_user_id()),
       parent=tournament_db.key,
       tournament_key=tournament_db.key,
       user_key=auth.current_user_key(),
-    )
+  )
 
-  user_tournament_db.put()
-  flask.flash('Awesome! You are in..', category='success')
+  body = 'name: %s\nusername: %s\nemail: %s' % (
+      auth.current_user_db().name,
+      auth.current_user_db().username,
+      auth.current_user_db().email,
+  )
+  creator_user_db = model.User.get_by_id(tournament_db.user_key.id())
+
+  if register_flag == 'register':
+    user_tournament_db.put()
+    flask.flash('Awesome! You are in..', category='success')
+    # how to send an email to -> creator_user_db.email
+    # task.send_mail_notification('%s entered tournament %s' % (auth.current_user_db().name, tournament_db.name), body)
+  elif register_flag == 'unregister':
+    user_tournament_db.key.delete()
+    flask.flash('Bummer! You are out..', category='info')
+    # how to send an email to -> creator_user_db.email
+    # task.send_mail_notification('%s left tournament %s' % (auth.current_user_db().name, tournament_db.name), body)
+
   return flask.redirect(flask.url_for('tournament_view', tournament_id=tournament_id))
