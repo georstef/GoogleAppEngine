@@ -33,6 +33,10 @@ class Config(model.Base):
   def has_twitter(self):
     return bool(self.twitter_consumer_key and self.twitter_consumer_secret)
 
+  @property
+  def has_google_public_api_key(self):
+    return bool(self.google_public_api_key)
+
   _PROPERTIES = model.Base._PROPERTIES.union({
       'analytics_id',
       'announcement_html',
