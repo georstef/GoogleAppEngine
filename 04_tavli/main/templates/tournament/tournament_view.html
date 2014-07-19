@@ -51,12 +51,6 @@
               Register
             </button>
           </form>
-        # else
-          <form action="{{url_for('tournament_register', tournament_id=tournament_db.key.id(), register_flag='unregister')}}" method="post">
-            <button type="submit" class="btn btn-link btn-block btn-loading" data-loading-text="Unregistering..">
-              Unregister
-            </button>
-          </form>
         # endif
       # endif
 
@@ -87,6 +81,15 @@
               <td>
                 <img src="{{user_db.avatar_url_size(36)}}" width="18" alt="Avatar of {{user_db.name}}">
                 {{user_db.name}}
+                # if not tournament_db.is_closed
+                  # if tournament_db.is_user_registered(current_user.user_db) and current_user.id == user_db.key.id()
+                  <form action="{{url_for('tournament_register', tournament_id=tournament_db.key.id(), register_flag='unregister')}}" method="post" class="pull-right">
+                        <button type="submit" class="btn btn-link btn-loading" data-loading-text="Unregistering..">
+                          Unregister
+                        </button>
+                  </form>
+                  # endif
+                # endif
               </td>
               <td>{{user_tournament_db.position or '-'}}</td>
             </tr>
